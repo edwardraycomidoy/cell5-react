@@ -12,9 +12,11 @@ import Collections from './components/Collections'
 import './axios'
 
 class App extends React.Component {
+	/*constructor(props) {
+    super(props);
+  }*/
 
   async componentDidMount() {
-
     let token = localStorage.getItem('token')
     if(token !== null)
     {
@@ -25,20 +27,22 @@ class App extends React.Component {
       }).then(response => {
         localStorage.setItem('user', JSON.stringify(response.data))
       })
-      .catch(error => {
+      .catch(() => {
         localStorage.removeItem('token')
         localStorage.removeItem('user')
+        //this.props.history.push('/')
       })
     }
     else
     {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
+      //this.props.history.push('/')
     }
   }
 
   logoutHandler() {
-  let token = localStorage.getItem('token')
+    let token = localStorage.getItem('token')
     if(token !== null)
     {
       axios.delete('logout', {
@@ -63,7 +67,7 @@ class App extends React.Component {
               <Switch>
                 <Route path="/" exact component={Home} />
                 <Route path="/login" exact component={Login} />
-                <Route path="/members" exact component={Members} />
+                <Route path="/members/:page?/:keywords?" exact component={Members} />
                 <Route path="/collections" exact component={Collections} />
               </Switch>
             </div>
