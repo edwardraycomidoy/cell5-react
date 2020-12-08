@@ -20,6 +20,7 @@ class Members extends React.Component {
 			collections: [],
 			payments: []
 		}
+
 		this.inputKeywordsHandler = this.inputKeywordsHandler.bind(this)
   }
 
@@ -55,12 +56,10 @@ class Members extends React.Component {
 	}
 
 	async redrawMembersList() {
-		console.log(this.state.current_page)
-
     let token = localStorage.getItem('token')
     if(token !== null)
     {
-			await axios.get('members', {
+			await axios.get('api/members', {
 				params: {
 					keywords: this.state.keywords,
 					page: this.state.current_page
@@ -73,7 +72,7 @@ class Members extends React.Component {
 				this.setState({
 					current_page: response.data.members.current_page,
 					last_page: response.data.members.last_page,
-					members: response.data.members,
+					members: response.data.members.data,
 					collections: response.data.collections,
 					payments: response.data.payments
 				})
@@ -94,15 +93,12 @@ class Members extends React.Component {
 
 	render() {
 		let tbody
-		
-		if(typeof this.state.members.data !== typeof undefined)
+
+		if(this.state.members.length > 0)
 		{
-			const members = this.state.members.data;
-			var member_rows = members.map((member) => {
+			var member_rows = this.state.members.map((member) => {
+				var due_dates_td = this.state.collections.map((collection) => {
 
-				var collections = this.state.collections;
-
-				var due_dates_td = collections.map((collection) => {
 					return (
 						<td className="text-center" key={'m-' + member.id + '-c-' + collection.id}>
 							<svg width="1em" height="1em" viewBox="0 0 16 16" className="bi bi-square mark-paid" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style={{ cursor: 'pointer' }}>
@@ -116,7 +112,7 @@ class Members extends React.Component {
 						</td>
 					)
 				})
-	
+
 				return (
 					<tr key={'m-' + member.id}>
 						<td>
@@ -136,8 +132,7 @@ class Members extends React.Component {
 
 		if(typeof this.state.collections !== typeof undefined && this.state.collections.length > 0)
 		{
-			var collections = this.state.collections;
-			var collection_rows = collections.map((collection) => {
+			var collection_rows = this.state.collections.map((collection) => {
 				return (
 					<th key={'c-' + collection.id} style={{ fontWeight: 'normal', cursor: 'default' }}>{collection.due_on}</th>
 				)
@@ -149,8 +144,7 @@ class Members extends React.Component {
 		let pagination
 
 		if(this.state.last_page > 1) {
-			let prev_url
-			let next_url
+			let prev_url, next_url
 
 			if(this.state.current_page > 1)
 				prev_url = '/members/' + (this.state.current_page - 1).toString()
@@ -161,7 +155,6 @@ class Members extends React.Component {
 			pagination = (
 				<nav>
 					<ul className="pagination">
-
 						{
 							this.state.current_page === 1 ?
 								<li className="page-item disabled">
@@ -174,7 +167,6 @@ class Members extends React.Component {
 									</Link>
 								</li>
 						}
-
 						{
 							this.state.current_page === this.state.last_page ?
 								<li className="page-item disabled">
@@ -187,7 +179,6 @@ class Members extends React.Component {
 									</Link>
 								</li>
 						}
-
 					</ul>
 				</nav>
 			)
@@ -204,7 +195,7 @@ class Members extends React.Component {
 						<input type="text" className="form-control rounded-0" name="keywords" placeholder="Search keywords..." autoComplete="off" onChange={this.inputKeywordsHandler} />
 					</form>
 					{
-						typeof this.state.members.data !== typeof undefined &&
+						this.state.members.length > 0 &&
 						<React.Fragment>
 							<table className="table table-bordered table-striped table-sm w-auto mt-3">
 								<thead>

@@ -19,26 +19,19 @@ class Login extends React.Component {
 			password: '',
 			remember_me: email !== '',
 			errors: {
-				email: '',
-				password: ''
+				email: null,
+				password: null
 			}
 		}
 
-		this.inputEmailHandler = this.inputEmailHandler.bind(this)
-		this.inputPasswordHandler = this.inputPasswordHandler.bind(this)
+		this.inputHandler = this.inputHandler.bind(this)
 		this.toggleRememberMeHandler = this.toggleRememberMeHandler.bind(this)
 		this.submitFormHandler = this.submitFormHandler.bind(this)
 	}
 
-	inputEmailHandler(e) {
+	inputHandler(e) {
 		this.setState({
-			email: e.target.value
-		})
-	}
-
-	inputPasswordHandler(e) {
-		this.setState({
-			password: e.target.value
+			[e.target.name]: e.target.value
 		})
 	}
 
@@ -64,27 +57,30 @@ class Login extends React.Component {
 
 		this.setState({ password: '' })
 
-		await axios.post('login', params)
-		.then(response => {
-			localStorage.setItem('token', response.data.token)
-			localStorage.setItem('user', JSON.stringify(response.data))
-			this.props.history.push('/')
-		})
-		.catch(error => {
-			if(typeof error.response !== typeof undefined)
-			{
-				let errors = {
-					email: '',
-					password: ''
+		await axios.get('sanctum/csrf-cookie').then(async response => {
+			await axios.post('api/login', params)
+			.then(response => {
+				localStorage.setItem('token', response.data.token)
+				localStorage.setItem('user', JSON.stringify(response.data))
+				this.props.history.push('/')
+			})
+			.catch(error => {
+				console.log(error.response)
+				if(typeof error.response !== typeof undefined)
+				{
+					let errors = {
+						email: null,
+						password: null
+					}
+					if(typeof error.response.data.errors.email !== typeof undefined)
+						errors.email = error.response.data.errors.email[0];
+					if(typeof error.response.data.errors.password !== typeof undefined)
+						errors.password = error.response.data.errors.password[0];
+					this.setState({
+						errors: errors
+					})
 				}
-				if(typeof error.response.data.errors.email !== typeof undefined)
-					errors.email = error.response.data.errors.email;
-				if(typeof error.response.data.errors.password !== typeof undefined)
-					errors.password = error.response.data.errors.password;
-				this.setState({
-					errors: errors
-				})
-			}
+			})
 		})
 	}
 
@@ -98,13 +94,13 @@ class Login extends React.Component {
 							<form onSubmit={this.submitFormHandler}>
 								<div className="form-group">
 									<label htmlFor="email">Email</label>
-									<input type="email" className="form-control rounded-0" id="email" placeholder="Enter email" required value={this.state.email} onChange={this.inputEmailHandler} />
-									<small className={'form-text text-danger' + (this.state.errors.email === '' ? ' d-none' : '')}>{this.state.errors.email}</small>
+									<input type="email" className="form-control rounded-0" id="email" name="email" placeholder="Enter email" required value={this.state.email} onChange={this.inputHandler} />
+									<small className={'form-text text-danger' + (this.state.errors.email === null ? ' d-none' : '')}>{this.state.errors.email}</small>
 								</div>
 								<div className="form-group">
 									<label htmlFor="password">Password</label>
-									<input type="password" className="form-control rounded-0" id="password" placeholder="Enter password" required value={this.state.password} onChange={this.inputPasswordHandler} />
-									<small className={'form-text text-danger' + (this.state.errors.password === '' ? ' d-none' : '')}>{this.state.errors.password}</small>
+									<input type="password" className="form-control rounded-0" id="password" name="password" placeholder="Enter password" required value={this.state.password} onChange={this.inputHandler} />
+									<small className={'form-text text-danger' + (this.state.errors.password === null ? ' d-none' : '')}>{this.state.errors.password}</small>
 								</div>
 								<div className="form-check">
 									<input type="checkbox" className="form-check-input" id="remember" checked={this.state.remember_me} onChange={this.toggleRememberMeHandler} />
