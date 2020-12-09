@@ -121,7 +121,7 @@ class Member extends React.Component {
 				<div className="col-lg-12">
 					{
 						this.state.member !== null ?
-							<h2>{this.state.member.first_name} {this.state.member.middle_initial !== null ? this.state.member.middle_initial : ''} {this.state.member.last_name} {this.state.member.suffix !== null ? this.state.member.suffix : ''}</h2>
+							<h2>{this.state.member.first_name} {this.state.member.middle_initial !== null ? `${this.state.member.middle_initial}.` : ''} {this.state.member.last_name} {this.state.member.suffix !== null ? this.state.member.suffix : ''}</h2>
 						:
 							<h2>Loading...</h2>
 					}

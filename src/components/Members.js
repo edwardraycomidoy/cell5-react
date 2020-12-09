@@ -184,7 +184,7 @@ class Members extends React.Component {
 			<div className="row">
 				<div className="col-lg-12">
 					<h2>Members</h2>
-					<Link to="/">
+					<Link to="/member/add">
 						<span className="btn btn-sm btn-success rounded-0">Add</span>
 					</Link>
 					<form className="mt-3 w-50">

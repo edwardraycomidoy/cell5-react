@@ -57,7 +57,7 @@ class Login extends React.Component {
 
 		this.setState({ password: '' })
 
-		axios.get('sanctum/csrf-cookie').then(async response => {
+		axios.get('sanctum/csrf-cookie').then(() => {
 			axios.post('api/login', params)
 			.then(response => {
 				localStorage.setItem('token', response.data.token)

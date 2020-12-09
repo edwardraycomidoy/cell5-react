@@ -1,7 +1,30 @@
 import React from 'react'
+import axios from 'axios'
 import { Link, withRouter } from 'react-router-dom'
 
 class Header extends React.Component {
+	logoutHandler = () => {
+    let token = localStorage.getItem('token')
+    if(token !== null)
+    {
+      axios.delete('api/logout', {
+        headers: {
+          Authorization: 'Bearer ' + token
+        }
+      })
+      .then(() => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+				this.props.history.push('/')
+      })
+    }
+    else
+    {
+      localStorage.removeItem('user')
+			this.props.history.push('/')
+    }
+  }
+
 	render() {
 		let user = localStorage.getItem('user')
 
@@ -43,7 +66,7 @@ class Header extends React.Component {
 												<span className="nav-link">Login</span>
 											</Link>
 										:
-											<button className="nav-link" style={logoutStyle} onClick={this.props.logoutHandler.bind(this)}>Logout</button>
+											<button className="nav-link" style={logoutStyle} onClick={this.logoutHandler.bind(this)}>Logout</button>
 									}
 								</li>
 							</ul>
