@@ -25,23 +25,23 @@ class Login extends React.Component {
 		}
 
 		this.inputHandler = this.inputHandler.bind(this)
-		this.toggleRememberMeHandler = this.toggleRememberMeHandler.bind(this)
-		this.submitFormHandler = this.submitFormHandler.bind(this)
+		this.toggleRememberHandler = this.toggleRememberHandler.bind(this)
+		this.loginHandler = this.loginHandler.bind(this)
 	}
 
-	inputHandler(e) {
+	inputHandler = (e) => {
 		this.setState({
 			[e.target.name]: e.target.value
 		})
 	}
 
-	toggleRememberMeHandler(e) {
+	toggleRememberHandler = (e) => {
 		this.setState({
 			remember_me: e.target.checked
 		})
 	}
 
-	async submitFormHandler(e) {
+  loginHandler = (e) => {
 		e.preventDefault()
 
 		if(this.state.remember_me)
@@ -57,15 +57,14 @@ class Login extends React.Component {
 
 		this.setState({ password: '' })
 
-		await axios.get('sanctum/csrf-cookie').then(async response => {
-			await axios.post('api/login', params)
+		axios.get('sanctum/csrf-cookie').then(async response => {
+			axios.post('api/login', params)
 			.then(response => {
 				localStorage.setItem('token', response.data.token)
-				localStorage.setItem('user', JSON.stringify(response.data))
+				localStorage.setItem('user', response.data)
 				this.props.history.push('/')
 			})
 			.catch(error => {
-				console.log(error.response)
 				if(typeof error.response !== typeof undefined)
 				{
 					let errors = {
@@ -91,7 +90,7 @@ class Login extends React.Component {
 					<h2 className="text-center">Login</h2>
 					<div className="card rounded-0 mt-3">
 						<div className="card-body">
-							<form onSubmit={this.submitFormHandler}>
+							<form onSubmit={this.loginHandler}>
 								<div className="form-group">
 									<label htmlFor="email">Email</label>
 									<input type="email" className="form-control rounded-0" id="email" name="email" placeholder="Enter email" required value={this.state.email} onChange={this.inputHandler} />
@@ -103,7 +102,7 @@ class Login extends React.Component {
 									<small className={'form-text text-danger' + (this.state.errors.password === null ? ' d-none' : '')}>{this.state.errors.password}</small>
 								</div>
 								<div className="form-check">
-									<input type="checkbox" className="form-check-input" id="remember" checked={this.state.remember_me} onChange={this.toggleRememberMeHandler} />
+									<input type="checkbox" className="form-check-input" id="remember" checked={this.state.remember_me} onChange={this.toggleRememberHandler} />
 									<label className="form-check-label" htmlFor="remember">Remember me</label>
 								</div>
 								<button type="submit" className="btn btn-primary w-100 rounded-0 mt-3">Submit</button>

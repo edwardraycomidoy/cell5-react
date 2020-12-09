@@ -1,10 +1,10 @@
 import React from 'react'
 import axios from 'axios'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 class Members extends React.Component {
 	constructor(props) {
-		super(props);
+		super(props)
 
 		let current_page = this.props.match.params.page
 		if(typeof current_page === typeof undefined)
@@ -24,8 +24,7 @@ class Members extends React.Component {
 		this.inputKeywordsHandler = this.inputKeywordsHandler.bind(this)
   }
 
-	componentDidUpdate(prevProps)
-	{
+	componentDidUpdate = (prevProps) => {
 		if(this.props.location.pathname !== prevProps.location.pathname)
 		{
 			let current_page = this.props.match.params.page
@@ -37,29 +36,29 @@ class Members extends React.Component {
 			this.setState({
 				current_page: current_page
 			}, () => {
-				this.redrawMembersList()
+				this.drawTable()
 			})
 		}
 	}
 
-	componentDidMount() {
-		this.redrawMembersList()
+	componentDidMount = () => {
+		this.drawTable()
 	}
 
-	inputKeywordsHandler(e) {
+	inputKeywordsHandler = (e) => {
 		this.setState({
 			keywords: e.target.value,
 			current_page: 1
 		}, () => {
-			this.redrawMembersList()
+			this.drawTable()
 		})
 	}
 
-	async redrawMembersList() {
+	drawTable = () => {
     let token = localStorage.getItem('token')
     if(token !== null)
     {
-			await axios.get('api/members', {
+			axios.get('api/members', {
 				params: {
 					keywords: this.state.keywords,
 					page: this.state.current_page
@@ -68,7 +67,6 @@ class Members extends React.Component {
           Authorization: 'Bearer ' + token
         }
       }).then(response => {
-
 				this.setState({
 					current_page: response.data.members.current_page,
 					last_page: response.data.members.last_page,
@@ -76,19 +74,17 @@ class Members extends React.Component {
 					collections: response.data.collections,
 					payments: response.data.payments
 				})
-      })
-      .catch(() => {
+      }).catch(() => {
 				localStorage.removeItem('token')
 				localStorage.removeItem('user')
 				this.props.history.push('/')
 			})
     }
     else
-    {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      this.props.history.push('/')
-    }
+		{
+			localStorage.removeItem('user')
+			this.props.history.push('/')
+		}
 	}
 
 	render() {
@@ -100,7 +96,7 @@ class Members extends React.Component {
 				var due_dates_td = this.state.collections.map((collection) => {
 
 					return (
-						<td className="text-center" key={'m-' + member.id + '-c-' + collection.id}>
+						<td className="text-center" key={`m-${member.id}-c-${collection.id}`}>
 							<svg width="1em" height="1em" viewBox="0 0 16 16" className="bi bi-square mark-paid" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style={{ cursor: 'pointer' }}>
 								<path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
 							</svg>
@@ -114,10 +110,10 @@ class Members extends React.Component {
 				})
 
 				return (
-					<tr key={'m-' + member.id}>
+					<tr key={`m-${member.id}`}>
 						<td>
-							<Link to="/">
-								{member.last_name}, {member.first_name}
+							<Link to={`/member/${member.id}`}>
+								{member.last_name}, {member.first_name} {member.suffix !== null ? member.suffix : ''} {member.middle_initial !== null ? member.middle_initial : ''}
 							</Link>
 						</td>
 						{due_dates_td}
@@ -134,7 +130,7 @@ class Members extends React.Component {
 		{
 			var collection_rows = this.state.collections.map((collection) => {
 				return (
-					<th key={'c-' + collection.id} style={{ fontWeight: 'normal', cursor: 'default' }}>{collection.due_on}</th>
+					<th key={`c-${collection.id}`} style={{ fontWeight: 'normal', cursor: 'default' }}>{collection.due_on}</th>
 				)
 			})
 
@@ -147,10 +143,10 @@ class Members extends React.Component {
 			let prev_url, next_url
 
 			if(this.state.current_page > 1)
-				prev_url = '/members/' + (this.state.current_page - 1).toString()
+				prev_url = '/members' + (this.state.current_page > 2 ? '/page/' + (this.state.current_page - 1).toString() : '')
 
 			if(this.state.current_page < this.state.last_page)
-				next_url = '/members/' + (this.state.current_page + 1).toString()
+				next_url = '/members/page/' + (this.state.current_page + 1).toString()
 
 			pagination = (
 				<nav>
