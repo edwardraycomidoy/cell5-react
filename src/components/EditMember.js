@@ -17,13 +17,18 @@ class EditMember extends React.Component {
 			member: null,
 			collections: null,
 			back_url: '/member/' + id,
-			first_name: '',
-			middle_initial: '',
-			last_name: '',
-			suffix: '',
-			joined_on: '',
+			input: {
+				first_name: '',
+				middle_initial: '',
+				last_name: '',
+				suffix: '',
+				joined_on: ''
+			},
+			message: {
+				class: null,
+				message: null
+			},
 			errors: {
-				error: null,
 				first_name: null,
 				middle_initial: null,
 				last_name: null,
@@ -42,13 +47,16 @@ class EditMember extends React.Component {
           Authorization: 'Bearer ' + token
         }
       }).then(response => {
+				let member = response.data.member
 				this.setState({
-					member: response.data.member,
-					first_name: response.data.member.first_name,
-					middle_initial: response.data.member.middle_initial !== null ? response.data.member.middle_initial : '',
-					last_name: response.data.member.last_name,
-					suffix: response.data.member.suffix !== null ? response.data.member.suffix : '',
-					joined_on: response.data.member.joined_on
+					member: member,
+					input: {
+						first_name: member.first_name,
+						middle_initial: member.middle_initial !== null ? member.middle_initial : '',
+						last_name: member.last_name,
+						suffix: member.suffix !== null ? member.suffix : '',
+						joined_on: member.joined_on
+					}
 				})
       }).catch(() => {
 				this.props.history.push('/members')
@@ -63,31 +71,58 @@ class EditMember extends React.Component {
 
 	inputHandler = (e) => {
 		this.setState({
-			[e.target.name]: e.target.value
+			input: {
+				...this.state.input,
+				[e.target.name]: e.target.value
+			}
 		})
 	}
 
   submitHandler = (e) => {
 		e.preventDefault()
 
+		let input = this.state.input
+
 		const params = {
-			first_name: this.state.first_name,
-			middle_initial: this.state.middle_initial,
-			last_name: this.state.last_name,
-			suffix: this.state.suffix,
-			joined_on: this.state.joined_on
+			first_name: input.first_name.trim(),
+			middle_initial: input.middle_initial !== null && input.middle_initial.trim() !== '' ? input.middle_initial.trim() : '',
+			last_name: input.last_name.trim(),
+			suffix: input.suffix !== null && input.suffix.trim() !== '' ? input.suffix.trim() : '',
+			joined_on: input.joined_on.trim()
 		}
 
 		let token = localStorage.getItem('token')
 
 		axios.get('sanctum/csrf-cookie').then(() => {
 			axios.put(`api/members/${this.state.id}`, params, {	headers: { Authorization: 'Bearer ' + token	} })
-			.then(() => {
-				this.props.history.push(`/member/${this.state.id}`)
+			.then(response => {
+				this.setState({
+					member: params,
+					input: params,
+					message: {
+						class: response.data.class,
+						message: response.data.message
+					}
+				})
 			})
 			.catch(error => {
 				if(typeof error.response !== typeof undefined)
 				{
+					let message = {
+						class: null,
+						message: null
+					}
+
+					if(typeof error.response.data.message !== typeof undefined)
+					{
+						message.class = 'danger'
+						message.message = error.response.data.message
+					}
+
+					this.setState({
+						message: message
+					})
+
 					let errors = {
 						error: null,
 						first_name: null,
@@ -97,23 +132,20 @@ class EditMember extends React.Component {
 						joined_on: null
 					}
 
-					if(typeof error.response.data.message !== typeof undefined)
-						errors.error = error.response.data.message;
-
 					if(typeof error.response.data.errors.first_name !== typeof undefined)
-						errors.first_name = error.response.data.errors.first_name[0];
+						errors.first_name = error.response.data.errors.first_name[0]
 
 					if(typeof error.response.data.errors.middle_initial !== typeof undefined)
-						errors.middle_initial = error.response.data.errors.middle_initial[0];
+						errors.middle_initial = error.response.data.errors.middle_initial[0]
 
 					if(typeof error.response.data.errors.last_name !== typeof undefined)
-						errors.last_name = error.response.data.errors.last_name[0];
+						errors.last_name = error.response.data.errors.last_name[0]
 
 					if(typeof error.response.data.errors.suffix !== typeof undefined)
-						errors.suffix = error.response.data.errors.suffix[0];
+						errors.suffix = error.response.data.errors.suffix[0]
 
 					if(typeof error.response.data.errors.joined_on !== typeof undefined)
-						errors.joined_on = error.response.data.errors.joined_on[0];
+						errors.joined_on = error.response.data.errors.joined_on[0]
 
 					this.setState({
 						errors: errors
@@ -139,6 +171,10 @@ class EditMember extends React.Component {
 					</Link>
 				</div>
 				<div className="col-lg-6">
+					{
+						this.state.message.class !== null &&
+							<div className={`alert alert-${this.state.message.class} rounded-0 mt-3 mb-0`} role="alert">{this.state.message.message}</div>
+					}
 					<AddMemberForm state={this.state} inputHandler={this.inputHandler} submitHandler={this.submitHandler} />
 				</div>
 			</div>

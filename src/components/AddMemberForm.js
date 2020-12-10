@@ -12,9 +12,8 @@ class AddMemberForm extends React.Component {
                 type="text"
                 className="form-control rounded-0"
                 name="first_name"
-                value={this.props.state.first_name}
-                required
-                onChange={this.props.inputHandler}
+                value={this.props.state.input.first_name}
+               onChange={this.props.inputHandler}
               />
 							<small className={'form-text text-danger' + (this.props.state.errors.first_name === null ? ' d-none' : '')}>{this.props.state.errors.first_name}</small>
             </div>
@@ -24,7 +23,7 @@ class AddMemberForm extends React.Component {
                 type="text"
                 className="form-control rounded-0"
                 name="middle_initial"
-                value={this.props.state.middle_initial}
+                value={this.props.state.input.middle_initial}
                 onChange={this.props.inputHandler}
               />
 							<small className={'form-text text-danger' + (this.props.state.errors.middle_initial === null ? ' d-none' : '')}>{this.props.state.errors.middle_initial}</small>
@@ -35,8 +34,7 @@ class AddMemberForm extends React.Component {
                 type="text"
                 className="form-control rounded-0"
                 name="last_name"
-                value={this.props.state.last_name}
-                required
+                value={this.props.state.input.last_name}
                 onChange={this.props.inputHandler}
               />
 							<small className={'form-text text-danger' + (this.props.state.errors.last_name === null ? ' d-none' : '')}>{this.props.state.errors.last_name}</small>
@@ -47,7 +45,7 @@ class AddMemberForm extends React.Component {
                 type="text"
                 className="form-control rounded-0"
                 name="suffix"
-                value={this.props.state.suffix}
+                value={this.props.state.input.suffix}
                 onChange={this.props.inputHandler}
               />
 							<small className={'form-text text-danger' + (this.props.state.errors.suffix === null ? ' d-none' : '')}>{this.props.state.errors.suffix}</small>
@@ -58,7 +56,7 @@ class AddMemberForm extends React.Component {
                 type="date"
                 className="form-control rounded-0"
                 name="joined_on"
-                value={this.props.state.joined_on}
+                value={this.props.state.input.joined_on}
                 required
                 onChange={this.props.inputHandler}
                 onBlur={this.props.inputHandler}
