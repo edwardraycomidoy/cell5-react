@@ -55,6 +55,7 @@ class EditCollection extends React.Component {
         }
       }).then(response => {
 				let collection = response.data.collection
+				//console.log(collection)
 				this.setState({
 					collection: collection,
 					members: response.data.members,
@@ -120,8 +121,7 @@ class EditCollection extends React.Component {
 			axios.put(`api/collections/${this.state.id}`, params, {	headers: { Authorization: 'Bearer ' + token	} })
 			.then(response => {
 				this.setState({
-					collection: params,
-					input: params,
+					collection: response.data.collection,
 					message: {
 						class: response.data.class,
 						message: response.data.message
@@ -183,6 +183,9 @@ class EditCollection extends React.Component {
 
 	render()
 	{
+		const collection = this.state.collection
+		//console.log(collection)
+
 		return (
 			<div className="row">
 				<div className="col-lg-12">
@@ -190,6 +193,45 @@ class EditCollection extends React.Component {
 					<Link to={this.state.back_url}>
 						<span className="btn btn-sm btn-success rounded-0">Back</span>
 					</Link>
+					{
+							collection !== null &&
+							<table className="table table-bordered table-striped table-sm w-auto mt-3 mb-0">
+								<thead>
+									<tr>
+										<th>Member</th>
+										<th>Claimant</th>
+										<th>Due on</th>
+										<th>Released on</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>
+											<Link to={`/member/${collection.member_id}`}>
+												{collection.member_last_name}, {collection.member_first_name} {collection.member_suffix !== null ? collection.member_suffix : ''} {collection.member_middle_initial !== null ? `${collection.member_middle_initial}.` : ''}
+											</Link>
+										</td>
+										<td>
+											{
+												collection.claimant_id !== null ?
+													<React.Fragment>
+														{collection.claimant_last_name}, {collection.claimant_first_name} {collection.claimant_suffix !== null ? collection.claimant_suffix : ''} {collection.claimant_middle_initial !== null ? `${collection.claimant_middle_initial}.` : ''}
+													</React.Fragment>
+												:
+													<em>Member</em>
+											}
+										</td>
+										<td>{collection.due_on}</td>
+										{
+											collection.released_on !== null ?
+												<td>{collection.released_on}</td>
+											:
+												<td>&nbsp;</td>
+										}
+									</tr>
+								</tbody>
+							</table>
+						}
 				</div>
 				<div className="col-lg-6">
 					{
