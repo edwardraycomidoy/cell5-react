@@ -79,14 +79,14 @@ class Collections extends React.Component {
 					<tr key={`c-${collection.id}`}>
 						<td>
 							<Link to={`/member/${collection.member_id}`}>
-								{collection.member_last_name}, {collection.member_first_name} {collection.member_suffix !== null ? collection.member_suffix : ''} {collection.member_middle_initial !== null ? collection.member_middle_initial : ''}
+								{collection.member_last_name}, {collection.member_first_name} {collection.member_suffix !== null ? collection.member_suffix : ''} {collection.member_middle_initial !== null ? `${collection.member_middle_initial}.` : ''}
 							</Link>
 						</td>
 						<td>
 							{
 								collection.claimant_id !== null ?
 									<React.Fragment>
-										{collection.claimant_last_name}, {collection.claimant_first_name} {collection.claimant_suffix !== null ? collection.claimant_suffix : ''} {collection.claimant_middle_initial !== null ? collection.claimant_middle_initial : ''}
+										{collection.claimant_last_name}, {collection.claimant_first_name} {collection.claimant_suffix !== null ? collection.claimant_suffix : ''} {collection.claimant_middle_initial !== null ? `${collection.claimant_middle_initial}.` : ''}
 									</React.Fragment>
 								:
 									<em>Member</em>
@@ -151,7 +151,7 @@ class Collections extends React.Component {
 			<div className="row">
 				<div className="col-lg-12">
 					<h2>Collections</h2>
-						<Link to="/">
+						<Link to="/collection/add">
 							<span className="btn btn-sm btn-success rounded-0">Add</span>
 						</Link>
 						{

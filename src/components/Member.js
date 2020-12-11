@@ -79,11 +79,11 @@ class Member extends React.Component {
 							{
 								collection.claimant_id !== null ?
 									<React.Fragment>
-										{collection.claimant_last_name}, {collection.claimant_first_name} {collection.claimant_suffix !== null ? collection.claimant_suffix : ''} {collection.claimant_middle_initial !== null ? collection.claimant_middle_initial : ''}
+										{collection.claimant_last_name}, {collection.claimant_first_name} {collection.claimant_suffix !== null ? collection.claimant_suffix : ''} {collection.claimant_middle_initial !== null ? `${collection.claimant_middle_initial}.` : ''}
 									</React.Fragment>
 								:
 									<Link to={`/member/${collection.member_id}`}>
-											{collection.member_last_name}, {collection.member_first_name} {collection.member_suffix !== null ? collection.member_suffix : ''} {collection.member_middle_initial !== null ? collection.member_middle_initial : ''}
+											{collection.member_last_name}, {collection.member_first_name} {collection.member_suffix !== null ? collection.member_suffix : ''} {collection.member_middle_initial !== null ? `${collection.member_middle_initial}.` : ''}
 									</Link>
 							}
 						</td>
@@ -91,7 +91,7 @@ class Member extends React.Component {
 							{
 								collection.claimant_id !== null ?
 									<Link to={`/member/${collection.member_id}`}>
-										{collection.member_last_name}, {collection.member_first_name} {collection.member_suffix !== null ? collection.member_suffix : ''} {collection.member_middle_initial !== null ? collection.member_middle_initial : ''}
+										{collection.member_last_name}, {collection.member_first_name} {collection.member_suffix !== null ? collection.member_suffix : ''} {collection.member_middle_initial !== null ? `${collection.member_middle_initial}.` : ''}
 									</Link>
 								:
 									<em>Claimant</em>

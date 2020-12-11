@@ -13,7 +13,7 @@ class AddMemberForm extends React.Component {
                 className="form-control rounded-0"
                 name="first_name"
                 value={this.props.state.input.first_name}
-               onChange={this.props.inputHandler}
+                onChange={this.props.inputHandler}
               />
 							<small className={'form-text text-danger' + (this.props.state.errors.first_name === null ? ' d-none' : '')}>{this.props.state.errors.first_name}</small>
             </div>
