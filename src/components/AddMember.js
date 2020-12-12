@@ -57,7 +57,8 @@ class AddMember extends React.Component {
 
 		let token = localStorage.getItem('token')
 
-		axios.get('sanctum/csrf-cookie').then(() => {
+		axios.get('sanctum/csrf-cookie')
+		.then(() => {
 			axios.post('api/members', params, {	headers: { Authorization: 'Bearer ' + token	} })
 			.then(response => {
 				this.props.history.push('/member/' + response.data.id)

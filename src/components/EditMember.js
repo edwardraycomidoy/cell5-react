@@ -93,7 +93,8 @@ class EditMember extends React.Component {
 
 		let token = localStorage.getItem('token')
 
-		axios.get('sanctum/csrf-cookie').then(() => {
+		axios.get('sanctum/csrf-cookie')
+		.then(() => {
 			axios.put(`api/members/${this.state.id}`, params, {	headers: { Authorization: 'Bearer ' + token	} })
 			.then(response => {
 				this.setState({

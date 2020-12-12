@@ -98,7 +98,8 @@ class AddCollection extends React.Component {
 
 		let token = localStorage.getItem('token')
 
-		axios.get('sanctum/csrf-cookie').then(() => {
+		axios.get('sanctum/csrf-cookie')
+		.then(() => {
 			axios.post('api/collections', params, {	headers: { Authorization: 'Bearer ' + token	} })
 			.then(response => {
 				this.props.history.push('/collection/' + response.data.id)
