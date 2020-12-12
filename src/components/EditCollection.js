@@ -185,7 +185,6 @@ class EditCollection extends React.Component {
 	render()
 	{
 		const collection = this.state.collection
-		//console.log(collection)
 
 		return (
 			<div className="row">
@@ -202,7 +201,6 @@ class EditCollection extends React.Component {
 										<th>Member</th>
 										<th>Claimant</th>
 										<th>Due on</th>
-										<th>Released on</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -223,12 +221,6 @@ class EditCollection extends React.Component {
 											}
 										</td>
 										<td>{collection.due_on}</td>
-										{
-											collection.released_on !== null ?
-												<td>{collection.released_on}</td>
-											:
-												<td>&nbsp;</td>
-										}
 									</tr>
 								</tbody>
 							</table>

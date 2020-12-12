@@ -93,7 +93,6 @@ class Collections extends React.Component {
 							}
 						</td>
 						<td>{collection.due_on}</td>
-						<td>{collection.released_on !== null ? collection.released_on : <React.Fragment>&nbsp;</React.Fragment>}</td>
 						<td>
 							<Link to={`/collection/${collection.id}`}>View</Link>
 						</td>
@@ -163,7 +162,6 @@ class Collections extends React.Component {
 											<th>Member</th>
 											<th>Claimant</th>
 											<th>Due on</th>
-											<th>Released on</th>
 											<th>&nbsp;</th>
 										</tr>
 									</thead>

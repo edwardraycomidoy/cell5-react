@@ -2,6 +2,8 @@ import React from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 
+import PaymentCheckboxes from './PaymentCheckboxes'
+
 class Collection extends React.Component {
 	constructor(props) {
 		super(props)
@@ -20,10 +22,14 @@ class Collection extends React.Component {
 			id: id,
 			collection: null,
 			members: [],
+			payments: [],
 			back_url: '/collections',
 			current_page: current_page,
 			last_page: 1
 		}
+
+		this.setMemberPaid = this.setMemberPaid.bind(this)
+		this.setMemberUnpaid = this.setMemberUnpaid.bind(this)
   }
 
 	componentDidUpdate = (prevProps) => {
@@ -70,7 +76,8 @@ class Collection extends React.Component {
 					current_page: response.data.members.current_page,
 					last_page: response.data.members.last_page,
 					collection: response.data.collection,
-					members: response.data.members.data
+					members: response.data.members.data,
+					payments: response.data.payments
 				})
       }).catch(() => {
 				this.props.history.push('/members')
@@ -83,6 +90,59 @@ class Collection extends React.Component {
 		}
 	}
 
+	setMemberPaid = (e) => {
+		let memberId = parseInt(e.target.dataset.memberId)
+
+		this.setState({
+			payments: {
+				...this.state.payments,
+				[memberId]: true
+			}
+		})
+
+		let token = localStorage.getItem('token')
+    if(token !== null)
+    {
+			let params = {
+				member_id: memberId,
+				collection_id: parseInt(this.state.id)
+			}
+
+			axios.get('sanctum/csrf-cookie')
+			.then(() => {
+				axios.post('api/payments', params, {headers: { Authorization: 'Bearer ' + token	} })
+			})
+		}
+	}
+
+	setMemberUnpaid = (e) => {
+		let memberId = parseInt(e.target.dataset.memberId)
+
+		this.setState({
+			payments: {
+				...this.state.payments,
+				[memberId]: false
+			}
+		})
+
+		let token = localStorage.getItem('token')
+    if(token !== null)
+    {
+			let params = {
+				member_id: memberId,
+				collection_id: parseInt(this.state.id)
+			}
+
+			axios.get('sanctum/csrf-cookie')
+			.then(() => {
+				axios.delete('api/payments', {
+					data: params,
+					headers: { Authorization: 'Bearer ' + token	}
+				})
+			})
+		}
+	}
+
 	render() {
 		const collection = this.state.collection
 
@@ -91,6 +151,8 @@ class Collection extends React.Component {
 		if(this.state.members.length > 0)
 		{
 			var rows = this.state.members.map((member) => {
+				let paid = this.state.payments[member.id]
+
 				return (
 					<tr key={`m-${member.id}`}>
 						<td>
@@ -99,13 +161,7 @@ class Collection extends React.Component {
 							</Link>
 						</td>
 						<td className="text-center">
-							<svg width="1em" height="1em" viewBox="0 0 16 16" className="bi bi-square mark-paid" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style={{ cursor: 'pointer' }}>
-								<path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
-							</svg>
-							<svg width="1em" height="1em" viewBox="0 0 16 16" className="bi bi-check-square mark-unpaid d-none" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style={{ cursor: 'pointer' }}>
-								<path fillRule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
-								<path fillRule="evenodd" d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.236.236 0 0 1 .02-.022z"/>
-							</svg>
+							<PaymentCheckboxes paid={paid} member_id={member.id} collection_id={collection.id} setMemberPaid={this.setMemberPaid} setMemberUnpaid={this.setMemberUnpaid} />
 						</td>
 					</tr>
 				)
@@ -184,7 +240,6 @@ class Collection extends React.Component {
 										<th>Member</th>
 										<th>Claimant</th>
 										<th>Due on</th>
-										<th>Released on</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -205,7 +260,6 @@ class Collection extends React.Component {
 											}
 										</td>
 										<td>{collection.due_on}</td>
-										<td>{collection.released_on !== null ? collection.released_on : <React.Fragment>&nbsp;</React.Fragment>}</td>
 									</tr>
 								</tbody>
 							</table>

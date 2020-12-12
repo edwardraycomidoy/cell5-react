@@ -16,6 +16,7 @@ class Member extends React.Component {
 			id: id,
 			member: null,
 			collections: [],
+			payments: [],
 			back_url: '/members'
 		}
 
@@ -49,17 +50,20 @@ class Member extends React.Component {
     if(token !== null)
     {
 			axios.get(`api/members/${this.state.id}`, {
-        headers: {
-          Authorization: 'Bearer ' + token
-        }
-      }).then(response => {
+				headers: {
+					Authorization: 'Bearer ' + token
+				}
+			})
+			.then(response => {
 				this.setState({
 					member: response.data.member,
 					collections: response.data.collections,
+					payments: response.data.payments,
 					back_url: '/members' + (response.data.current_page > 1 ? '/page/' + response.data.current_page : '')
 				})
-      }).catch(() => {
-				this.props.history.push('/members')
+			})
+			.catch(() => {
+					this.props.history.push('/members')
 			})
     }
     else
@@ -70,9 +74,56 @@ class Member extends React.Component {
 	}
 
 	setMemberPaid = (e) => {
+		let collectionId = parseInt(e.target.dataset.collectionId)
+
+		this.setState({
+			payments: {
+				...this.state.payments,
+				[collectionId]: true
+			}
+		})
+
+		let token = localStorage.getItem('token')
+    if(token !== null)
+    {
+			let params = {
+				member_id: parseInt(this.state.id),
+				collection_id: collectionId
+			}
+
+			axios.get('sanctum/csrf-cookie')
+			.then(() => {
+				axios.post('api/payments', params, {headers: { Authorization: 'Bearer ' + token	} })
+			})
+		}
 	}
 
 	setMemberUnpaid = (e) => {
+		let collectionId = parseInt(e.target.dataset.collectionId)
+
+		this.setState({
+			payments: {
+				...this.state.payments,
+				[collectionId]: false
+			}
+		})
+
+		let token = localStorage.getItem('token')
+    if(token !== null)
+    {
+			let params = {
+				member_id: parseInt(this.state.id),
+				collection_id: collectionId
+			}
+
+			axios.get('sanctum/csrf-cookie')
+			.then(() => {
+				axios.delete('api/payments', {
+					data: params,
+					headers: { Authorization: 'Bearer ' + token	}
+				})
+			})
+		}
 	}
 
 	render() {
@@ -81,7 +132,7 @@ class Member extends React.Component {
 		if(this.state.collections.length > 0)
 		{
 			const collections = this.state.collections.map((collection) => {
-				let paid = false
+				let paid = this.state.payments[collection.id]
 
 				return (
 					<tr key={`c-${collection.id}`}>
@@ -112,7 +163,7 @@ class Member extends React.Component {
 						</td>
 						<td>{collection.due_on}</td>
 						<td className="text-center">
-							<PaymentCheckboxes paid={paid} setMemberPaid={this.setMemberPaid} setMemberUnpaid={this.setMemberUnpaid} />
+							<PaymentCheckboxes paid={paid} member_id={this.state.id} collection_id={collection.id} setMemberPaid={this.setMemberPaid} setMemberUnpaid={this.setMemberUnpaid} />
 						</td>
 					</tr>
 				)
