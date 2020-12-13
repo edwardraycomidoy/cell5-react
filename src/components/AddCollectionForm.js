@@ -1,4 +1,5 @@
 import React from 'react'
+import { v4 as uuid } from 'uuid'
 
 class AddCollectionForm extends React.Component {
 	render() {
@@ -7,7 +8,7 @@ class AddCollectionForm extends React.Component {
 		if(this.props.state.members.length > 0)	{
 			options = this.props.state.members.map((members) => {
 				return (
-					<option key={`m-${members.id}`} value={members.id}>
+					<option key={uuid()} value={members.id}>
             {members.last_name}, {members.first_name} {members.suffix !== null ? members.suffix : ''} {members.middle_initial !== null ? `${members.middle_initial}.` : ''}
 					</option>
 				)

@@ -1,6 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
+import { v4 as uuid } from 'uuid'
 
 import PaymentCheckboxes from './PaymentCheckboxes'
 
@@ -30,6 +31,7 @@ class Collection extends React.Component {
 
 		this.setMemberPaid = this.setMemberPaid.bind(this)
 		this.setMemberUnpaid = this.setMemberUnpaid.bind(this)
+		this.deleteCollection = this.deleteCollection.bind(this)
   }
 
 	componentDidUpdate = (prevProps) => {
@@ -143,6 +145,26 @@ class Collection extends React.Component {
 		}
 	}
 
+	deleteCollection = (e) => {
+		let token = localStorage.getItem('token')
+    if(token !== null)
+    {
+			let collectionId = parseInt(e.target.dataset.collectionId)
+
+			axios.get('sanctum/csrf-cookie')
+			.then(() => {
+				axios.delete(`api/collections/${collectionId}`, {
+					headers: { Authorization: 'Bearer ' + token	}
+				})
+				.then(() => {
+					this.props.history.push('/collections')
+				})
+			})
+		}
+		else
+			this.props.history.push('/collections')
+	}
+
 	render() {
 		const collection = this.state.collection
 
@@ -150,11 +172,11 @@ class Collection extends React.Component {
 
 		if(this.state.members.length > 0)
 		{
-			var rows = this.state.members.map((member) => {
+			var rows = this.state.members.map(member => {
 				let paid = this.state.payments[member.id]
 
 				return (
-					<tr key={`m-${member.id}`}>
+					<tr key={uuid()}>
 						<td>
 							<Link to={`/member/${member.id}`}>
 								{member.last_name}, {member.first_name} {member.suffix !== null ? member.suffix : ''} {member.middle_initial !== null ? `${member.middle_initial}.` : ''}
@@ -228,7 +250,7 @@ class Collection extends React.Component {
 								<Link to={`/collection/edit/${this.state.id}`} style={buttonStyle}>
 									<span className="btn btn-sm btn-info rounded-0">Edit</span>
 								</Link>
-								<button className="btn btn-sm btn-danger rounded-0 shadow-none" style={buttonStyle}>Delete</button>
+								<button className="btn btn-sm btn-danger rounded-0 shadow-none" data-collection-id={this.state.id} onClick={this.deleteCollection} style={buttonStyle}>Delete</button>
 							</React.Fragment>
 					}
 					{

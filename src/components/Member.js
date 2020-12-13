@@ -1,6 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
+import { v4 as uuid } from 'uuid'
 
 import PaymentCheckboxes from './PaymentCheckboxes'
 
@@ -22,6 +23,7 @@ class Member extends React.Component {
 
 		this.setMemberPaid = this.setMemberPaid.bind(this)
 		this.setMemberUnpaid = this.setMemberUnpaid.bind(this)
+		this.deleteMember = this.deleteMember.bind(this)
   }
 
 	componentDidUpdate = (prevProps) => {
@@ -126,6 +128,26 @@ class Member extends React.Component {
 		}
 	}
 
+	deleteMember = (e) => {
+		let token = localStorage.getItem('token')
+    if(token !== null)
+    {
+			let memberId = parseInt(e.target.dataset.memberId)
+
+			axios.get('sanctum/csrf-cookie')
+			.then(() => {
+				axios.delete(`api/members/${memberId}`, {
+					headers: { Authorization: 'Bearer ' + token	}
+				})
+				.then(() => {
+					this.props.history.push('/members')
+				})
+			})
+		}
+		else
+			this.props.history.push('/members')
+	}
+
 	render() {
 		let tbody
 
@@ -135,7 +157,7 @@ class Member extends React.Component {
 				let paid = this.state.payments[collection.id]
 
 				return (
-					<tr key={`c-${collection.id}`}>
+					<tr key={uuid()}>
 						<td>
 							<Link to={`/collection/${collection.id}`}>View</Link>
 						</td>
@@ -193,7 +215,7 @@ class Member extends React.Component {
 								<Link to={`/member/edit/${this.state.id}`} style={buttonStyle}>
 									<span className="btn btn-sm btn-info rounded-0">Edit</span>
 								</Link>
-								<button className="btn btn-sm btn-danger rounded-0 shadow-none" style={buttonStyle}>Delete</button>
+								<button className="btn btn-sm btn-danger rounded-0 shadow-none" data-member-id={this.state.id} onClick={this.deleteMember} style={buttonStyle}>Delete</button>
 							</React.Fragment>
 					}
 					{

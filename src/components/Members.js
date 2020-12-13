@@ -1,6 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
+import { v4 as uuid } from 'uuid'
 
 import PaymentCheckboxes from './PaymentCheckboxes'
 
@@ -164,14 +165,14 @@ class Members extends React.Component {
 					let paid = payment[collection.id]
 
 					return (
-						<td className="text-center" key={`m-${member.id}-c-${collection.id}`}>
+						<td className="text-center" key={uuid()}>
 							<PaymentCheckboxes paid={paid} member_id={member.id} collection_id={collection.id} setMemberPaid={this.setMemberPaid} setMemberUnpaid={this.setMemberUnpaid} />
 						</td>
 					)
 				})
 
 				return (
-					<tr key={`m-${member.id}`}>
+					<tr key={uuid()}>
 						<td>
 							<Link to={`/member/${member.id}`}>
 								{member.last_name}, {member.first_name} {member.suffix !== null ? member.suffix : ''} {member.middle_initial !== null ? `${member.middle_initial}.` : ''}
@@ -191,7 +192,7 @@ class Members extends React.Component {
 		{
 			var collection_rows = this.state.collections.map((collection) => {
 				return (
-					<th key={`c-${collection.id}`} style={{ fontWeight: 'normal', cursor: 'default' }}>{collection.due_on}</th>
+					<th key={uuid()} style={{ fontWeight: 'normal', cursor: 'default' }}>{collection.due_on}</th>
 				)
 			})
 

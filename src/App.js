@@ -61,7 +61,6 @@ class App extends React.Component {
                 <Route path="/collection/add" exact component={AddCollection} />
                 <Route path="/collection/edit/:id" exact component={EditCollection} />
                 <Route path="/collection/:id/(page)?/:page?" exact component={Collection} />
-
               </Switch>
             </div>
           </section>

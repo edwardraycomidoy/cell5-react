@@ -1,6 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
+import { v4 as uuid } from 'uuid'
 
 class Collections extends React.Component {
 	constructor(props) {
@@ -76,7 +77,7 @@ class Collections extends React.Component {
 		if(this.state.collections.length > 0)	{
 			let collections = this.state.collections.map((collection) => {
 				return (
-					<tr key={`c-${collection.id}`}>
+					<tr key={uuid()}>
 						<td>
 							<Link to={`/member/${collection.member_id}`}>
 								{collection.member_last_name}, {collection.member_first_name} {collection.member_suffix !== null ? collection.member_suffix : ''} {collection.member_middle_initial !== null ? `${collection.member_middle_initial}.` : ''}
